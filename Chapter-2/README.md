@@ -161,3 +161,5 @@ irb(main):009:0> book.reload.authors.pluck(:name)
   Author Pluck (0.7ms)  SELECT "authors"."name" FROM "authors" INNER JOIN "book_authors" ON "authors"."id" = "book_authors"."author_id" WHERE "book_authors"."book_id" = ?  [["book_id", 1]]
 => ["Matsumoto Yukihiro", "David Heinemeir Hansson"]
 ```
+
+### 2-2-2 モデル同士のリレーション
