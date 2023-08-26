@@ -47,3 +47,19 @@ price:integer
 bin/rails db:create
 bin/rails db:migrate
 ```
+
+### 2-2-2 モデル同士のリレーション
+
+- モデルに対してリレーションを作成する
+
+```bash
+bin/rails g model Publisher name:string address:text
+bin/rails g model Author name:string penname:string
+bin/rails db:migrate
+```
+
+- モデル同士のリレーションを作成する
+
+```bash
+bin/rails g migration AddPublisherIdToBooks publisher:references
+```
