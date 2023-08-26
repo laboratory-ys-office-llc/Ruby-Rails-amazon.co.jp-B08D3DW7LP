@@ -29,3 +29,21 @@ rails new book_admin \
 | `--skip-action-cable`   | ActionCable に関連するファイルや設定を生成しないようにいたします。   |
 
 これらのオプションを使用することで、特定の機能に関連するファイルや設定をスキップして、Rails アプリケーションを生成することができます。
+
+### 2-1-2 モデルの基礎と考え方
+
+- ActiveRecord でモデルを実装する
+
+```bash
+bin/rails g model Book \
+name:string \
+published_on:date \
+price:integer
+```
+
+- マイグレーション
+
+```bash
+bin/rails db:create
+bin/rails db:migrate
+```
