@@ -290,3 +290,65 @@ TRANSACTION (18.2ms)  commit transaction
 | `update_all`        | 一致する全てのレコードを更新し、バリデーションやコールバックをスキップする |
 | `delete`            | レコードをデータベースから削除するが、`destroy`コールバックは実行されない  |
 | `delete_all`        | 条件に一致するレコードをデータベースからすべて削除する                     |
+
+### 2-2-5 ActiveRecord::Enum で列挙型を扱う
+
+- ActiveRecord::Enum の導入
+
+```shell
+bin/rails g migration AddSalesStatusToBooks sales_status:integer
+bin/rails db:migrate
+```
+
+```text
+bin/rails db:migrate
+      invoke  active_record
+      create    db/migrate/20230918025045_add_sales_status_to_books.rb
+== 20230918025045 AddSalesStatusToBooks: migrating ============================
+-- add_column(:books, :sales_status, :integer)
+   -> 0.0012s
+== 20230918025045 AddSalesStatusToBooks: migrated (0.0012s) ===================
+```
+
+Enum を追加した実装例
+
+```ruby
+# 予約中の書籍を作成
+Book.create(name: "Reservation Book", price: 1000, publisher: Publisher.find(1), sales_status: :reservation)
+
+# 現在発売中の書籍を作成
+Book.create(name: "On Sale Book", price: 1500, publisher: Publisher.find(1), sales_status: :now_on_sale)
+
+# 絶版の書籍を作成
+Book.create(name: "Out of Print Book", price: 500, publisher: Publisher.find(1), sales_status: :end_of_print)
+```
+
+Enum で定義された状態の確認例
+
+```ruby
+irb(main):010:0> book = Book.last
+  Book Load (0.1ms)  SELECT "books".* FROM "books" ORDER BY "books"."id" DESC LIMIT ?  [["LIMIT", 1]]
+=>
+#<Book:0x00007f3c64c81f70
+...
+irb(main):011:0> book.now_on_sale?
+=> false
+irb(main):012:0> book.end_of_print?
+=> true
+```
+
+データベースの実際の保存された値を確認する
+
+```ruby
+irb(main):013:0> book.sales_status_before_type_cast
+=> 2
+```
+
+Enum の定義を確認する
+
+```ruby
+irb(main):015:0> Book.sales_statuses
+=> {"reservation"=>0, "now_on_sale"=>1, "end_of_print"=>2}
+```
+
+[ActiveRecord::Enum と enumerize](https://github.com/brainspec/enumerize)
