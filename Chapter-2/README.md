@@ -194,3 +194,84 @@ irb(main):051:0> book.errors
 ```
 
 [Active Record バリデーション](https://railsguides.jp/active_record_validations.html)
+
+### 2-2-4 コールバックによる制御
+
+コールバックの基本的な使い方
+
+単体でのテスト
+
+```ruby
+irb(main):007:0> book.send(:add_lovely_to_cat)
+irb(main):008:0> puts book.name
+We Love lovely Cat
+=> nil
+```
+
+レコードの作成実例
+
+`before_validation` で文字列の変換
+
+````ruby
+irb(main):009:0>
+irb(main):010:1* Book.create(
+irb(main):011:1*   name: "We Love Cat",
+irb(main):012:1*   price: 999,
+irb(main):013:1*   publisher: Publisher.find(1),
+irb(main):014:0> )
+  Publisher Load (0.1ms)  SELECT "publishers".* FROM "publishers" WHERE "publishers"."id" = ? LIMIT ?  [["id", 1], ["LIMIT", 1]]
+  TRANSACTION (0.0ms)  begin transaction
+  Book Create (0.2ms)  INSERT INTO "books" ("name", "published_on", "price", "created_at", "updated_at", "publisher_id") VALUES (?, ?, ?, ?, ?, ?)  [["name", "We Love lovely Cat"], ["published_on", nil], ["price", 999], ["created_at", "2023-09-18 02:12:29.555663"], ["updated_at", "2023-09-18 02:12:29.555663"], ["publisher_id", 1]]
+  TRANSACTION (9.5ms)  commit transaction
+=>
+#<Book:0x00007f602cd83748
+ id: 6,
+ name: "We Love lovely Cat",
+ published_on: nil,
+ price: 999,
+ created_at: Mon, 18 Sep 2023 02:12:29.555663000 UTC +00:00,
+ updated_at: Mon, 18 Sep 2023 02:12:29.555663000 UTC +00:00,
+ publisher_id: 1>
+irb(main):015:0> reload!
+Reloading...
+=> true
+
+`after_destroy` コールバックで Rails ログを出力（ `ENV=development` ）
+
+```ruby
+irb(main):016:0> book = Book.last
+  Book Load (0.1ms)  SELECT "books".* FROM "books" ORDER BY "books"."id" DESC LIMIT ?  [["LIMIT", 1]]
+=>
+#<Book:0x00007f6027ef04f0
+...
+irb(main):017:0> book.destroy
+  TRANSACTION (0.1ms)  begin transaction
+  Book Destroy (0.2ms)  DELETE FROM "books" WHERE "books"."id" = ?  [["id", 6]]
+Book is deleted: {"id"=>6, "name"=>"We Love lovely Cat", "published_on"=>nil, "price"=>999, "created_at"=>Mon, 18 Sep 2023 02:12:29.555663000 UTC +00:00, "updated_at"=>Mon, 18 Sep 2023 02:12:29.555663000 UTC +00:00, "publisher_id"=>1}
+  TRANSACTION (18.2ms)  commit transaction
+=>
+#<Book:0x00007f6027ef04f0
+ id: 6,
+ name: "We Love lovely Cat",
+ published_on: nil,
+ price: 999,
+ created_at: Mon, 18 Sep 2023 02:12:29.555663000 UTC +00:00,
+ updated_at: Mon, 18 Sep 2023 02:12:29.555663000 UTC +00:00,
+ publisher_id: 1>
+````
+
+Development ログ
+`tail -n10 log/development.log`
+
+```ruby
+Book Load (0.2ms)  SELECT "books".* FROM "books" WHERE "books"."id" = ? LIMIT ?  [["id", 5], ["LIMIT", 1]]
+Publisher Load (0.1ms)  SELECT "publishers".* FROM "publishers" WHERE "publishers"."id" = ? LIMIT ?  [["id", 1], ["LIMIT", 1]]
+TRANSACTION (0.0ms)  begin transaction
+Book Create (0.2ms)  INSERT INTO "books" ("name", "published_on", "price", "created_at", "updated_at", "publisher_id") VALUES (?, ?, ?, ?, ?, ?)  [["name", "We Love lovely Cat"], ["published_on", nil], ["price", 999], ["created_at", "2023-09-18 02:12:29.555663"], ["updated_at", "2023-09-18 02:12:29.555663"], ["publisher_id", 1]]
+TRANSACTION (9.5ms)  commit transaction
+Book Load (0.1ms)  SELECT "books".* FROM "books" ORDER BY "books"."id" DESC LIMIT ?  [["LIMIT", 1]]
+TRANSACTION (0.1ms)  begin transaction
+Book Destroy (0.2ms)  DELETE FROM "books" WHERE "books"."id" = ?  [["id", 6]]
+Book is deleted: {"id"=>6, "name"=>"We Love lovely Cat", "published_on"=>nil, "price"=>999, "created_at"=>Mon, 18 Sep 2023 02:12:29.555663000 UTC +00:00, "updated_at"=>Mon, 18 Sep 2023 02:12:29.555663000 UTC +00:00, "publisher_id"=>1}
+TRANSACTION (18.2ms)  commit transaction
+```
