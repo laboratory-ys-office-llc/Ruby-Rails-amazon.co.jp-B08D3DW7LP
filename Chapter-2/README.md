@@ -48,6 +48,8 @@ bin/rails db:create
 bin/rails db:migrate
 ```
 
+## 2-2 モデルを扱う
+
 ### 2-2-2 モデル同士のリレーション
 
 - モデルに対してリレーションを作成する
