@@ -354,3 +354,37 @@ irb(main):015:0> Book.sales_statuses
 ```
 
 [ActiveRecord::Enum と enumerize](https://github.com/brainspec/enumerize)
+
+## 2-3 コントローラの役割
+
+### 2-3-1 ブラウザからアプリケーションにアクセスした時の流れ
+
+- Books コントローラの `show` アクションの中身
+
+```shell
+bin/rails g controller books
+      create  app/controllers/books_controller.rb
+      invoke  erb
+      create    app/views/books
+      invoke  test_unit
+      create    test/controllers/books_controller_test.rb
+      invoke  helper
+      create    app/helpers/books_helper.rb
+      invoke    test_unit
+```
+
+- コントローラーテスト用に JSON テンプレートを用意
+
+```shell
+curl -s -X GET http://localhost:3000/books/1.json
+```
+
+```json
+{
+  "id": 1,
+  "name": "Book 1",
+  "price": 1000,
+  "sales_status": null,
+  "published_on": "2023-08-26"
+}
+```
