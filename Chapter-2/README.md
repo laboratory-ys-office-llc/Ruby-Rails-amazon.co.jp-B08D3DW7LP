@@ -275,3 +275,18 @@ Book Destroy (0.2ms)  DELETE FROM "books" WHERE "books"."id" = ?  [["id", 6]]
 Book is deleted: {"id"=>6, "name"=>"We Love lovely Cat", "published_on"=>nil, "price"=>999, "created_at"=>Mon, 18 Sep 2023 02:12:29.555663000 UTC +00:00, "updated_at"=>Mon, 18 Sep 2023 02:12:29.555663000 UTC +00:00, "publisher_id"=>1}
 TRANSACTION (18.2ms)  commit transaction
 ```
+
+バリデーションされないメソッド例
+
+| メソッド名          | 説明                                                                       |
+| ------------------- | -------------------------------------------------------------------------- |
+| `increment`         | 属性の値を増やす                                                           |
+| `decrement`         | 属性の値を減らす                                                           |
+| `increment_counter` | 指定されたカウンターを増やす                                               |
+| `decrement_counter` | 指定されたカウンターを減らす                                               |
+| `toggle`            | boolean 属性の値を反転させる                                               |
+| `update_column`     | 一つの属性を更新し、バリデーションやコールバックをスキップする             |
+| `update_columns`    | 複数の属性を一度に更新し、バリデーションやコールバックをスキップする       |
+| `update_all`        | 一致する全てのレコードを更新し、バリデーションやコールバックをスキップする |
+| `delete`            | レコードをデータベースから削除するが、`destroy`コールバックは実行されない  |
+| `delete_all`        | 条件に一致するレコードをデータベースからすべて削除する                     |
