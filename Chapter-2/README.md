@@ -162,4 +162,35 @@ irb(main):009:0> book.reload.authors.pluck(:name)
 => ["Matsumoto Yukihiro", "David Heinemeir Hansson"]
 ```
 
-### 2-2-2 モデル同士のリレーション
+### 2-2-3 モデルを通じてデータを更新する
+
+`Book` オブジェクトを作成してデータベースに保存する例
+
+```ruby
+Book.create(
+  name: "Rails Book",
+  published_on: Time.parse("20230918").ago(2.months),
+  price: 2980,
+  publisher: Publisher.find(1)
+)
+```
+
+バリデーションエラーを試す
+
+```ruby
+irb(main):047:0> book.name = "a" * 30
+=> "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaa"
+irb(main):048:0> book.price = 1000
+=> 1000
+irb(main):049:0> book.publisher = Publisher.find(1)
+  Publisher Load (0.3ms)  SELECT "publishers".* FROM "publishers" WHERE "publishers"."id" = ? LIMIT ?  [["id", 1], ["LIMIT", 1]]
+=>
+#<Publisher:0x00007f4bb9312c50
+...
+irb(main):050:0> book.save
+=> false
+irb(main):051:0> book.errors
+=> #<ActiveModel::Errors [#<ActiveModel::Error attribute=name, type=too_long, options={:count=>25}>]>
+```
+
+[Active Record バリデーション](https://railsguides.jp/active_record_validations.html)
